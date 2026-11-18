@@ -13,18 +13,22 @@
   nav button.active { border-bottom: 3px solid #6c4ad0; color: #6c4ad0; font-weight: bold; }
   section { display: none; padding: 12px; }
   section.active { display: block; }
-  #messages { height: 55vh; overflow-y: auto; background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
+  #messages { height: 50vh; overflow-y: auto; background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
   .msg { margin: 6px 0; padding: 8px 12px; border-radius: 12px; max-width: 85%; }
   .user { background: #6c4ad0; color: #fff; margin-left: auto; }
   .bot { background: #eee; }
   .row { display: flex; gap: 6px; }
   input, textarea { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; width: 100%; }
-  .row button, .btn { padding: 10px 14px; background: #6c4ad0; color: #fff; border: none; border-radius: 8px; font-size: 15px; }
+  .row button { padding: 10px 14px; background: #6c4ad0; color: #fff; border: none; border-radius: 8px; font-size: 15px; }
+  #micBtn.listening { background: #e55; }
+  #speakBtn.off { background: #999; }
   ul { list-style: none; margin-top: 10px; }
   li { background: #fff; padding: 10px; margin-bottom: 6px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
   li.done span { text-decoration: line-through; color: #888; }
   li button { background: #e55; color: #fff; border: none; border-radius: 6px; padding: 4px 8px; }
   .small { font-size: 12px; color: #666; margin: 6px 0; }
+  .bar { display: flex; gap: 6px; margin-bottom: 8px; }
+  .bar button { padding: 8px 12px; background: #6c4ad0; color: #fff; border: none; border-radius: 8px; font-size: 14px; }
 </style>
 </head>
 <body>
@@ -37,11 +41,17 @@
 </nav>
 
 <section id="chat" class="active">
+  <div class="bar">
+    <button id="speakBtn" onclick="toggleSpeak()">Voice replies: ON</button>
+    <button onclick="stopSpeaking()">Stop talking</button>
+  </div>
   <div id="messages"></div>
   <div class="row">
-    <input id="input" placeholder="Ask Lizzy anything..." onkeydown="if(event.key==='Enter')send()">
+    <input id="input" placeholder="Type or tap the mic..." onkeydown="if(event.key==='Enter')send()">
+    <button id="micBtn" onclick="startListening()">Mic</button>
     <button onclick="send()">Send</button>
   </div>
+  <p class="small" id="voiceNote"></p>
 </section>
 
 <section id="plan">
@@ -76,6 +86,58 @@ function show(id, btn) {
   btn.classList.add('active');
 }
 
+/* ---------- Voice: speaking ---------- */
+let speakOn = localStorage.getItem('lizzySpeak') !== 'off';
+const speakBtn = document.getElementById('speakBtn');
+function updateSpeakBtn() {
+  speakBtn.textContent = 'Voice replies: ' + (speakOn ? 'ON' : 'OFF');
+  speakBtn.className = speakOn ? '' : 'off';
+}
+function toggleSpeak() {
+  speakOn = !speakOn;
+  localStorage.setItem('lizzySpeak', speakOn ? 'on' : 'off');
+  if (!speakOn) stopSpeaking();
+  updateSpeakBtn();
+}
+function stopSpeaking() {
+  if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+}
+function speak(text) {
+  if (!speakOn || !('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = 1;
+  u.pitch = 1.1;
+  window.speechSynthesis.speak(u);
+}
+
+/* ---------- Voice: listening ---------- */
+const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+const micBtn = document.getElementById('micBtn');
+const voiceNote = document.getElementById('voiceNote');
+let recognition = null;
+if (SR) {
+  recognition = new SR();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.onstart = () => { micBtn.classList.add('listening'); voiceNote.textContent = 'Listening...'; };
+  recognition.onend = () => { micBtn.classList.remove('listening'); voiceNote.textContent = ''; };
+  recognition.onerror = (e) => { voiceNote.textContent = 'Mic error: ' + e.error + '. Allow microphone permission in Chrome.'; };
+  recognition.onresult = (e) => {
+    document.getElementById('input').value = e.results[0][0].transcript;
+    send();
+  };
+} else {
+  voiceNote.textContent = 'Microphone typing is not supported in this browser. Use Chrome on Android.';
+}
+function startListening() {
+  if (!recognition) return;
+  stopSpeaking();
+  try { recognition.start(); } catch (e) {}
+}
+
+/* ---------- Chat ---------- */
 const msgBox = document.getElementById('messages');
 let history = JSON.parse(localStorage.getItem('lizzyHistory') || '[]');
 
@@ -102,6 +164,7 @@ async function send() {
   const reply = await getReply();
   history.push({ role: 'assistant', content: reply });
   addBubble('bot', reply);
+  speak(reply);
   localStorage.setItem('lizzyHistory', JSON.stringify(history.slice(-30)));
 }
 
@@ -123,7 +186,7 @@ async function getReply() {
       body: JSON.stringify({
         model: 'claude-sonnet-4-5',
         max_tokens: 600,
-        system: 'You are Lizzy, a warm, practical personal assistant helping ' + name + ' and their partner with daily life: planning, advice, motivation, ideas. Keep answers clear and kind.',
+        system: 'You are Lizzy, a warm, practical personal assistant helping ' + name + ' and their partner with daily life: planning, advice, motivation, ideas. Keep answers short, clear and kind, because they are read aloud.',
         messages: history.slice(-12)
       })
     });
@@ -135,6 +198,7 @@ async function getReply() {
   }
 }
 
+/* ---------- Planner ---------- */
 let tasks = JSON.parse(localStorage.getItem('lizzyTasks') || '[]');
 function renderTasks() {
   const ul = document.getElementById('tasks');
@@ -163,6 +227,7 @@ function addTask() {
   saveTasks();
 }
 
+/* ---------- Notes and settings ---------- */
 function saveNotes() { localStorage.setItem('lizzyNotes', document.getElementById('noteText').value); }
 function saveSettings() {
   localStorage.setItem('lizzyName', document.getElementById('userName').value);
@@ -172,6 +237,7 @@ function saveSettings() {
 document.getElementById('noteText').value = localStorage.getItem('lizzyNotes') || '';
 document.getElementById('userName').value = localStorage.getItem('lizzyName') || '';
 document.getElementById('apiKey').value = localStorage.getItem('lizzyKey') || '';
+updateSpeakBtn();
 render();
 renderTasks();
 </script>
