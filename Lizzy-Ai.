@@ -1,179 +1,615 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Lizzy AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Barbie Princess | Birthday Surprise</title>
+
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { font-family: Arial, sans-serif; background: #f4f1fb; color: #222; }
-  header { background: #6c4ad0; color: #fff; padding: 14px; text-align: center; font-size: 20px; }
-  nav { display: flex; background: #fff; border-bottom: 1px solid #ddd; }
-  nav button { flex: 1; padding: 12px; border: none; background: none; font-size: 15px; }
-  nav button.active { border-bottom: 3px solid #6c4ad0; color: #6c4ad0; font-weight: bold; }
-  section { display: none; padding: 12px; }
-  section.active { display: block; }
-  #messages { height: 55vh; overflow-y: auto; background: #fff; border-radius: 10px; padding: 10px; margin-bottom: 10px; }
-  .msg { margin: 6px 0; padding: 8px 12px; border-radius: 12px; max-width: 85%; }
-  .user { background: #6c4ad0; color: #fff; margin-left: auto; }
-  .bot { background: #eee; }
-  .row { display: flex; gap: 6px; }
-  input, textarea { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 8px; font-size: 15px; width: 100%; }
-  .row button, .btn { padding: 10px 14px; background: #6c4ad0; color: #fff; border: none; border-radius: 8px; font-size: 15px; }
-  ul { list-style: none; margin-top: 10px; }
-  li { background: #fff; padding: 10px; margin-bottom: 6px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; }
-  li.done span { text-decoration: line-through; color: #888; }
-  li button { background: #e55; color: #fff; border: none; border-radius: 6px; padding: 4px 8px; }
-  .small { font-size: 12px; color: #666; margin: 6px 0; }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Georgia', serif;
+    background: linear-gradient(135deg, #ffe0ef, #ffc1dc, #fff0f7);
+    color: #8d2458;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+button, input, textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    border: none;
+    border-radius: 30px;
+    padding: 13px 22px;
+    background: linear-gradient(135deg, #ff5da2, #d63384);
+    color: white;
+    box-shadow: 0 5px 15px #d6338440;
+}
+
+button:hover {
+    transform: translateY(-2px);
+}
+
+.hidden {
+    display: none !important;
+}
+
+section {
+    padding: 35px 16px;
+}
+
+h1, h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+h1 {
+    font-size: clamp(30px, 7vw, 52px);
+}
+
+h2 {
+    font-size: clamp(24px, 5vw, 36px);
+}
+
+p {
+    line-height: 1.8;
+}
+
+.card {
+    width: min(92%, 650px);
+    margin: 25px auto;
+    padding: 28px 20px;
+    text-align: center;
+    background: #ffffffd9;
+    border: 2px solid #ffb5d5;
+    border-radius: 25px;
+    box-shadow: 0 12px 35px #a52a5b20;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 13px;
+    margin: 10px 0;
+    border: 1px solid #f4a3c7;
+    border-radius: 12px;
+    background: #fff8fc;
+    color: #8d2458;
+}
+
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.hero {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 25px;
+}
+
+.subtitle {
+    font-size: 18px;
+    margin: 12px auto;
+}
+
+.butterfly {
+    font-size: 35px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(-8deg); }
+    50% { transform: translateY(-15px) rotate(8deg); }
+}
+
+#countdown {
+    font-size: clamp(25px, 7vw, 42px);
+    font-weight: bold;
+    margin: 20px 0;
+    color: #d63384;
+}
+
+.gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    max-width: 950px;
+    margin: 25px auto;
+}
+
+.memory {
+    background: white;
+    padding: 10px;
+    border-radius: 18px;
+    box-shadow: 0 5px 18px #b94b7b25;
+}
+
+.memory img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #ffe0ef;
+}
+
+.memory p {
+    padding: 9px 3px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.cake {
+    font-size: 100px;
+    cursor: pointer;
+    display: inline-block;
+    transition: transform .3s;
+}
+
+.cake:active {
+    transform: scale(.9);
+}
+
+.editor {
+    max-width: 850px;
+}
+
+.editor label {
+    display: block;
+    text-align: left;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+#fireworks {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 10;
+}
+
+footer {
+    text-align: center;
+    padding: 30px;
+}
+
+@media (min-width: 700px) {
+    .gallery {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    section {
+        padding: 55px 25px;
+    }
+}
+
+@media (max-width: 360px) {
+    .gallery {
+        gap: 8px;
+    }
+
+    .card {
+        padding: 22px 14px;
+    }
+
+    button {
+        padding: 12px 16px;
+    }
+}
 </style>
 </head>
+
 <body>
-<header>Lizzy AI</header>
-<nav>
-  <button class="active" onclick="show('chat', this)">Chat</button>
-  <button onclick="show('plan', this)">Planner</button>
-  <button onclick="show('notes', this)">Notes</button>
-  <button onclick="show('settings', this)">Settings</button>
-</nav>
 
-<section id="chat" class="active">
-  <div id="messages"></div>
-  <div class="row">
-    <input id="input" placeholder="Ask Lizzy anything..." onkeydown="if(event.key==='Enter')send()">
-    <button onclick="send()">Send</button>
-  </div>
+<canvas id="fireworks"></canvas>
+
+<!-- LOGIN -->
+<section id="loginScreen" class="hero">
+    <div class="butterfly">🦋 🦋 🦋</div>
+    <h1>Welcome to Your Fairytale</h1>
+    <p class="subtitle">A little world made with love, just for you 💗</p>
+
+    <div class="card">
+        <h2>Enter Your Secret Password</h2>
+
+        <input type="password" id="password"
+               placeholder="Enter password">
+
+        <button onclick="login()">Open My Surprise 💕</button>
+
+        <p id="loginError" style="color:red;margin-top:12px"></p>
+    </div>
 </section>
 
-<section id="plan">
-  <h3>Daily Planner</h3>
-  <div class="row">
-    <input id="taskInput" placeholder="Add a task..." onkeydown="if(event.key==='Enter')addTask()">
-    <button onclick="addTask()">Add</button>
-  </div>
-  <ul id="tasks"></ul>
+<!-- COUNTDOWN -->
+<section id="countdownScreen" class="hero hidden">
+    <div class="butterfly">🦋</div>
+    <h1>Something Magical Is Waiting...</h1>
+    <p class="subtitle">
+        Your birthday surprise is locked until December 8 💗
+    </p>
+
+    <div id="countdown">Loading...</div>
+
+    <p>Every second brings us closer to your special day.</p>
 </section>
 
-<section id="notes">
-  <h3>Shared Notes</h3>
-  <textarea id="noteText" rows="12" placeholder="Write notes, ideas, plans..." oninput="saveNotes()"></textarea>
-  <p class="small">Saved automatically on this phone.</p>
+<!-- ADMIN EDITOR -->
+<section id="adminScreen" class="hidden">
+    <h1>👑 Royal Admin Dashboard</h1>
+    <p style="text-align:center">
+        Edit your princess's birthday surprise.
+    </p>
+
+    <div class="card editor">
+        <label>Opening Letter</label>
+        <textarea id="editOpening"></textarea>
+
+        <label>Welcome Heading</label>
+        <input id="editHeading">
+
+        <label>First Birthday Wish</label>
+        <textarea id="editWish"></textarea>
+
+        <label>Final Love Letter</label>
+        <textarea id="editFinal"></textarea>
+
+        <h2 style="margin-top:25px">Memory Gallery 🦋</h2>
+        <p>Upload up to 8 photos.</p>
+
+        <div id="photoEditors"></div>
+
+        <button onclick="saveChanges()">Save All Changes 💗</button>
+        <button onclick="previewSite()">Preview Website 👀</button>
+        <button onclick="logout()" style="background:#777">Logout</button>
+    </div>
 </section>
 
-<section id="settings">
-  <h3>Settings</h3>
-  <p class="small">Your name</p>
-  <input id="userName" placeholder="Your name" oninput="saveSettings()">
-  <p class="small">AI API key (kept only on this phone)</p>
-  <input id="apiKey" type="password" placeholder="Paste API key here" oninput="saveSettings()">
-  <p class="small">Anthropic API key from console.anthropic.com. Without it, Lizzy gives simple built-in replies.</p>
-</section>
+<!-- BIRTHDAY WEBSITE -->
+<main id="birthdaySite" class="hidden">
+
+    <section class="hero">
+        <div class="butterfly">🦋 🌸 🦋</div>
+        <h1 id="mainHeading">Welcome to Your 22nd Year</h1>
+        <p class="subtitle">
+            Happy Birthday to my Barbie Princess! 👑
+        </p>
+        <p>Today, the whole world celebrates you. 💕</p>
+    </section>
+
+    <section>
+        <div class="card">
+            <h2>💌 A Letter From My Heart</h2>
+            <p id="openingText"></p>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <h2>🎂 Let's Cut Your Birthday Cake!</h2>
+            <p>Tap the cake to make your birthday wish.</p>
+            <div class="cake" onclick="cutCake()">🎂</div>
+            <p id="cakeMessage">Make a beautiful wish, princess! 💗</p>
+        </div>
+    </section>
+
+    <section>
+        <h2>📸 Our Beautiful Memories</h2>
+        <p style="text-align:center">
+            Eight little windows into our beautiful story.
+        </p>
+        <div class="gallery" id="gallery"></div>
+    </section>
+
+    <section>
+        <div class="card">
+            <h2>🌷 A Special Wish For You</h2>
+            <p id="middleWish"></p>
+        </div>
+    </section>
+
+    <section>
+        <div class="card">
+            <h2>❤️ My Forever Letter</h2>
+            <p id="finalLetter"></p>
+        </div>
+    </section>
+
+    <section class="hero">
+        <div class="butterfly">🦋 🦋 🦋</div>
+        <h1>Happy Birthday, My Love!</h1>
+        <p class="subtitle">
+            May your new year be filled with happiness,
+            success, beautiful dreams and endless love.
+        </p>
+        <h2>Forever Yours ❤️</h2>
+        <button onclick="celebrate()">Celebrate Again 🎆</button>
+    </section>
+
+</main>
+
+<footer>
+    Made with endless love 💗
+</footer>
 
 <script>
-function show(id, btn) {
-  document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  btn.classList.add('active');
+// PASSWORDS
+const ADMIN_PASSWORD = "130793";
+const USER_PASSWORD = "2004";
+
+// BIRTHDAY RELEASE DATE - INDIA TIME
+const RELEASE_DATE = new Date("2026-12-08T23:59:00+05:30");
+
+const defaultContent = {
+    opening: "My love, today is not just another birthday. It is the celebration of the beautiful person who makes my world brighter. I am so lucky to have you in my life. Happy Birthday, my princess! 💗",
+
+    heading: "Welcome to Your 22nd Year",
+
+    wish: "May every dream you carry become reality. May your career grow, your smile never fade, and your heart always find happiness. You deserve all the beautiful things in this world. 🌸",
+
+    final: "My dearest love,\n\nI want to see you achieve everything you dream about. I will always be proud of your efforts, your strength, and the person you are becoming. No matter how difficult life gets, I hope we continue to support each other, grow together, and create beautiful memories.\n\nI don't promise that every day will be perfect, but I promise to keep choosing you, respecting you, and cheering for you. I want to build a beautiful future with you, filled with love, laughter, trust, and happiness.\n\nHappy Birthday, my love. You are my favourite person, my happiness, and my forever. ❤️"
+};
+
+let content = loadContent();
+let isAdmin = false;
+let previewMode = false;
+let countdownTimer;
+
+function loadContent() {
+    try {
+        const saved = localStorage.getItem("birthdayContent");
+        return saved ? JSON.parse(saved) : {...defaultContent};
+    } catch (e) {
+        return {...defaultContent};
+    }
 }
 
-const msgBox = document.getElementById('messages');
-let history = JSON.parse(localStorage.getItem('lizzyHistory') || '[]');
+function login() {
+    const password = document.getElementById("password").value;
 
-function render() {
-  msgBox.innerHTML = '';
-  history.forEach(m => addBubble(m.role === 'user' ? 'user' : 'bot', m.content));
-  msgBox.scrollTop = msgBox.scrollHeight;
-}
-function addBubble(cls, text) {
-  const d = document.createElement('div');
-  d.className = 'msg ' + cls;
-  d.textContent = text;
-  msgBox.appendChild(d);
-  msgBox.scrollTop = msgBox.scrollHeight;
-}
+    if (password === ADMIN_PASSWORD) {
+        isAdmin = true;
+        show("adminScreen");
+        loadEditor();
+    } else if (password === USER_PASSWORD) {
+        isAdmin = false;
 
-async function send() {
-  const input = document.getElementById('input');
-  const text = input.value.trim();
-  if (!text) return;
-  input.value = '';
-  history.push({ role: 'user', content: text });
-  addBubble('user', text);
-  const reply = await getReply();
-  history.push({ role: 'assistant', content: reply });
-  addBubble('bot', reply);
-  localStorage.setItem('lizzyHistory', JSON.stringify(history.slice(-30)));
+        if (new Date() >= RELEASE_DATE) {
+            revealBirthday();
+        } else {
+            show("countdownScreen");
+            startCountdown();
+        }
+    } else {
+        document.getElementById("loginError").textContent =
+            "Incorrect password. Please try again.";
+    }
 }
 
-async function getReply() {
-  const key = localStorage.getItem('lizzyKey');
-  const name = localStorage.getItem('lizzyName') || 'friend';
-  if (!key) {
-    return 'Hi ' + name + '! Add your API key in Settings and I can chat properly. For now, try the Planner and Notes tabs.';
-  }
-  try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-5',
-        max_tokens: 600,
-        system: 'You are Lizzy, a warm, practical personal assistant helping ' + name + ' and their partner with daily life: planning, advice, motivation, ideas. Keep answers clear and kind.',
-        messages: history.slice(-12)
-      })
-    });
-    const data = await res.json();
-    if (data.content && data.content[0]) return data.content[0].text;
-    return 'Error: ' + (data.error ? data.error.message : 'unknown');
-  } catch (e) {
-    return 'Could not reach the AI: ' + e.message;
-  }
+function show(id) {
+    ["loginScreen", "countdownScreen", "adminScreen", "birthdaySite"]
+        .forEach(x => document.getElementById(x).classList.add("hidden"));
+
+    document.getElementById(id).classList.remove("hidden");
 }
 
-let tasks = JSON.parse(localStorage.getItem('lizzyTasks') || '[]');
-function renderTasks() {
-  const ul = document.getElementById('tasks');
-  ul.innerHTML = '';
-  tasks.forEach((t, i) => {
-    const li = document.createElement('li');
-    if (t.done) li.className = 'done';
-    const span = document.createElement('span');
-    span.textContent = t.text;
-    span.onclick = () => { tasks[i].done = !tasks[i].done; saveTasks(); };
-    const del = document.createElement('button');
-    del.textContent = 'X';
-    del.onclick = () => { tasks.splice(i, 1); saveTasks(); };
-    li.appendChild(span);
-    li.appendChild(del);
-    ul.appendChild(li);
-  });
-}
-function saveTasks() { localStorage.setItem('lizzyTasks', JSON.stringify(tasks)); renderTasks(); }
-function addTask() {
-  const el = document.getElementById('taskInput');
-  const v = el.value.trim();
-  if (!v) return;
-  tasks.push({ text: v, done: false });
-  el.value = '';
-  saveTasks();
+function startCountdown() {
+    clearInterval(countdownTimer);
+
+    function update() {
+        const difference = RELEASE_DATE - new Date();
+
+        if (difference <= 0) {
+            clearInterval(countdownTimer);
+            revealBirthday();
+            return;
+        }
+
+        const days = Math.floor(difference / 86400000);
+        const hours = Math.floor(difference % 86400000 / 3600000);
+        const minutes = Math.floor(difference % 3600000 / 60000);
+        const seconds = Math.floor(difference % 60000 / 1000);
+
+        document.getElementById("countdown").textContent =
+            `${days}d ${hours}h ${minutes}m ${seconds}s`;
+    }
+
+    update();
+    countdownTimer = setInterval(update, 1000);
 }
 
-function saveNotes() { localStorage.setItem('lizzyNotes', document.getElementById('noteText').value); }
-function saveSettings() {
-  localStorage.setItem('lizzyName', document.getElementById('userName').value);
-  localStorage.setItem('lizzyKey', document.getElementById('apiKey').value);
+function loadEditor() {
+    document.getElementById("editOpening").value = content.opening;
+    document.getElementById("editHeading").value = content.heading;
+    document.getElementById("editWish").value = content.wish;
+    document.getElementById("editFinal").value = content.final;
+
+    const container = document.getElementById("photoEditors");
+    container.innerHTML = "";
+
+    for (let i = 0; i < 8; i++) {
+        const savedPhoto = localStorage.getItem("birthdayPhoto" + i);
+
+        container.innerHTML += `
+            <label>Memory Photo ${i + 1}</label>
+            <input type="file" accept="image/*"
+                   onchange="uploadPhoto(event, ${i})">
+            <p style="font-size:13px">Choose a photo from your device.</p>
+        `;
+    }
 }
 
-document.getElementById('noteText').value = localStorage.getItem('lizzyNotes') || '';
-document.getElementById('userName').value = localStorage.getItem('lizzyName') || '';
-document.getElementById('apiKey').value = localStorage.getItem('lizzyKey') || '';
-render();
-renderTasks();
+function uploadPhoto(event, index) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+        alert("Please select an image.");
+        return;
+    }
+
+    if (file.size > 1.2 * 1024 * 1024) {
+        alert("Please choose a photo smaller than 1.2 MB.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function() {
+        try {
+            localStorage.setItem("birthdayPhoto" + index, reader.result);
+            alert("Photo uploaded successfully! 💗");
+        } catch (error) {
+            alert("Storage is full. Try a smaller photo.");
+        }
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function saveChanges() {
+    content = {
+        opening: document.getElementById("editOpening").value,
+        heading: document.getElementById("editHeading").value,
+        wish: document.getElementById("editWish").value,
+        final: document.getElementById("editFinal").value
+    };
+
+    localStorage.setItem("birthdayContent", JSON.stringify(content));
+
+    alert("Your changes have been saved! 💕");
+}
+
+function previewSite() {
+    saveChanges();
+    previewMode = true;
+    revealBirthday();
+}
+
+function revealBirthday() {
+    show("birthdaySite");
+
+    document.getElementById("mainHeading").textContent = content.heading;
+    document.getElementById("openingText").textContent = content.opening;
+    document.getElementById("middleWish").textContent = content.wish;
+    document.getElementById("finalLetter").textContent = content.final;
+
+    buildGallery();
+    celebrate();
+}
+
+function buildGallery() {
+    const gallery = document.getElementById("gallery");
+    gallery.innerHTML = "";
+
+    const quotes = [
+        "My favourite smile ❤️",
+        "A beautiful memory 🌸",
+        "One of my happiest moments 💗",
+        "Forever in my heart 🦋",
+        "My favourite person 👑",
+        "Every moment matters ✨",
+        "Our little story 💕",
+        "More memories to come 🌷"
+    ];
+
+    for (let i = 0; i < 8; i++) {
+        const photo = localStorage.getItem("birthdayPhoto" + i);
+
+        const image = photo
+            ? `<img src="${photo}" alt="Memory ${i + 1}">`
+            : `<div style="aspect-ratio:1;background:#ffe0ef;
+                   display:grid;place-items:center;border-radius:12px;
+                   font-size:35px">🦋</div>`;
+
+        gallery.innerHTML += `
+            <div class="memory">
+                ${image}
+                <p>${quotes[i]}</p>
+            </div>
+        `;
+    }
+}
+
+function cutCake() {
+    document.getElementById("cakeMessage").textContent =
+        "🎉 Happy Birthday, my princess! May all your dreams come true! ❤️";
+
+    celebrate();
+}
+
+function celebrate() {
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const particles = [];
+
+    for (let i = 0; i < 130; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height * 0.65,
+            size: Math.random() * 4 + 2,
+            speed: Math.random() * 3 + 1,
+            angle: Math.random() * Math.PI * 2,
+            life: 70
+        });
+    }
+
+    function animate() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach(p => {
+            ctx.beginPath();
+            ctx.fillStyle =
+                ["#ff2d95", "#ffd700", "#ffffff", "#c77dff"]
+                [Math.floor(Math.random() * 4)];
+
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fill();
+
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            p.life--;
+        });
+
+        const alive = particles.some(p => p.life > 0);
+
+        if (alive) requestAnimationFrame(animate);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+
+    animate();
+}
+
+function logout() {
+    isAdmin = false;
+    previewMode = false;
+    clearInterval(countdownTimer);
+    document.getElementById("password").value = "";
+    show("loginScreen");
+}
+
+window.addEventListener("resize", () => {
+    const canvas = document.getElementById("fireworks");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+});
 </script>
+
 </body>
 </html>
